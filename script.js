@@ -125,21 +125,22 @@ blocks.forEach(block => {
       updateScore();
     }
 
-// 💥 ACCURATE COLLISION (REAL HITBOX)
+// 💥 SAFE COLLISION (NO GAME FREEZE)
+
+if (!player || !block) return; // 🛑 prevent crash
 
 let playerRect = player.getBoundingClientRect();
 let blockRect = block.getBoundingClientRect();
 
-// 🔧 shrink player hitbox (IMPORTANT)
-let paddingX = 10;  // left-right cut
-let paddingY = 10;  // top-bottom cut
+// hitbox adjust
+let paddingX = 10;
+let paddingY = 10;
 
 let pLeft = playerRect.left + paddingX;
 let pRight = playerRect.right - paddingX;
 let pTop = playerRect.top + paddingY;
 let pBottom = playerRect.bottom - paddingY;
 
-// collision check
 if (
   pRight > blockRect.left &&
   pLeft < blockRect.right &&
