@@ -70,50 +70,49 @@ function jump() {
   document.addEventListener("touchstart", jump);
 
   // 🚧 BLOCK MOVEMENT
- blocks.forEach(block => {
+blocks.forEach(block => {
 
   let blockLeft = parseInt(block.style.left) || 800;
   let passed = false;
 
-  // 🪨 RANDOM SIZE (SMALL / MEDIUM)
-function setRandomStone() {
-  let type = Math.random();
+  let blockSpeed = 4.2; // ✅ ONLY ONE TIME
 
-  if (type < 0.65) {
-    // 🪨 SMALL (most common → easy)
-    block.style.width = "18px";
-    block.style.height = "18px";
-  } 
-  else if (type < 0.9) {
-    // 🪨 MEDIUM (challenge)
-    block.style.width = "28px";
-    block.style.height = "28px";
-  } 
-  else {
-    // 🪨 BIG (rare → exciting)
-    block.style.width = "38px";
-    block.style.height = "38px";
+  // 🪨 RANDOM SIZE (SMALL / MEDIUM / BIG)
+  function setRandomStone() {
+    let type = Math.random();
+
+    if (type < 0.65) {
+      block.style.width = "18px";
+      block.style.height = "18px";
+    } 
+    else if (type < 0.9) {
+      block.style.width = "28px";
+      block.style.height = "28px";
+    } 
+    else {
+      block.style.width = "38px";
+      block.style.height = "38px";
+    }
   }
-}
 
   setRandomStone();
 
-let blockSpeed = 4.2; // 
+  setInterval(() => {
+    if (!gameRunning) return;
 
-setInterval(() => {
-  if (!gameRunning) return;
+    // 🎯 MOVE
+    blockLeft -= blockSpeed;
 
-  blockLeft -= blockSpeed; // 
-
+    // 🔁 RESET
     if (blockLeft < -60) {
       blockLeft = 800;
       passed = false;
-      setRandomStone(); // 🪨 new random size
+      setRandomStone();
     }
 
     block.style.left = blockLeft + "px";
 
-    // score
+    // 🧮 SCORE
     if (!passed && blockLeft < 50) {
       score++;
       passed = true;
@@ -126,12 +125,16 @@ setInterval(() => {
       updateScore();
     }
 
-    // collision (based on size)
- let blockHeight = parseInt(block.style.height);
+    // 💥 COLLISION (FIXED FOR ALL SIZES)
+    let blockHeight = parseInt(block.style.height);
 
-if (blockLeft < 70 && blockLeft > 0 && position < (50 + blockHeight - 5)) {
-  gameOver();
-}
+    if (
+      blockLeft < 65 &&
+      blockLeft > 5 &&
+      position < (50 + blockHeight - 8)
+    ) {
+      gameOver();
+    }
 
   }, 30);
 });
