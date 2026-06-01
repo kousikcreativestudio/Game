@@ -3,21 +3,26 @@ let blocks = document.querySelectorAll(".block");
 let scoreDisplay = document.getElementById("score");
 
 let score = 0;
+let highScore = localStorage.getItem("highScore") || 0;
 let gameRunning = true;
 
-// 🎯 Score system
+// 🎯 Score + High Score
 function updateScore() {
   if (!gameRunning) return;
 
   score++;
-  scoreDisplay.innerText = "Score: " + score;
+  scoreDisplay.innerText = "Score: " + score + " | High: " + highScore;
+
+  if (score > highScore) {
+    highScore = score;
+    localStorage.setItem("highScore", highScore);
+  }
 }
 
-// update score every 100ms
-let scoreInterval = setInterval(updateScore, 100);
+setInterval(updateScore, 100);
 
 
-// 🟢 Simple gravity + jump
+// 🟢 Jump
 let isJumping = false;
 
 document.addEventListener("keydown", function(e) {
@@ -50,21 +55,20 @@ function jump() {
 }
 
 
-// 🚧 Move blocks (obstacles)
+// 🚧 Move blocks + collision
 blocks.forEach(block => {
   let blockLeft = parseInt(block.style.left);
 
-  let move = setInterval(() => {
+  setInterval(() => {
     if (!gameRunning) return;
 
     blockLeft -= 5;
     if (blockLeft < -50) {
-      blockLeft = 800; // reset to right side
+      blockLeft = 800;
     }
 
     block.style.left = blockLeft + "px";
 
-    // 💥 Collision detection
     let playerRect = player.getBoundingClientRect();
     let blockRect = block.getBoundingClientRect();
 
@@ -84,6 +88,5 @@ blocks.forEach(block => {
 // ❌ Game Over
 function gameOver() {
   gameRunning = false;
-  clearInterval(scoreInterval);
-  alert("Game Over! Your Score: " + score);
+  alert("Game Over! Score: " + score);
 }
