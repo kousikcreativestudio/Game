@@ -1,4 +1,5 @@
 window.onload = function() {
+
 let player = document.getElementById("player");
 let blocks = document.querySelectorAll(".block");
 let scoreDisplay = document.getElementById("score");
@@ -7,7 +8,7 @@ let score = 0;
 let highScore = localStorage.getItem("highScore") || 0;
 let gameRunning = true;
 
-// 🎯 Score + High Score
+// 🎯 Score
 function updateScore() {
   if (!gameRunning) return;
 
@@ -48,7 +49,6 @@ function jump() {
         position -= 5;
         player.style.bottom = position + "px";
       }, 20);
-
     }
     position += 5;
     player.style.bottom = position + "px";
@@ -56,7 +56,7 @@ function jump() {
 }
 
 
-// 🚧 Move blocks + collision
+// 🚧 Blocks
 blocks.forEach(block => {
   let blockLeft = parseInt(block.style.left);
 
@@ -90,4 +90,6 @@ blocks.forEach(block => {
 function gameOver() {
   gameRunning = false;
   alert("Game Over! Score: " + score);
+}
+
 }
