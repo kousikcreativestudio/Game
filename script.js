@@ -125,19 +125,22 @@ blocks.forEach(block => {
       updateScore();
     }
 
-    // 💥 COLLISION (FIXED FOR ALL SIZES)
-    let blockHeight = parseInt(block.style.height);
+// 💥 PERFECT COLLISION (NO FAKE HITS)
 
-    if (
-      blockLeft < 65 &&
-      blockLeft > 5 &&
-      position < (50 + blockHeight - 8)
-    ) {
-      gameOver();
-    }
+let playerBottom = position;
+let playerTop = position + 40; // adjust if player size changes
 
-  }, 30);
-});
+let blockHeight = parseInt(block.style.height);
+
+// check real overlap
+if (
+  blockLeft < 60 &&     // horizontal range (front)
+  blockLeft > 10 &&     // horizontal range (back)
+  playerBottom < (50 + blockHeight - 5) && // feet touch stone
+  playerTop > 50        // player body above ground
+) {
+  gameOver();
+}
 
   // 💰 COIN SYSTEM (MOVING + COLLECT)
   coinsEl.forEach(coin => {
