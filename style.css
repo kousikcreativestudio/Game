@@ -1,0 +1,31 @@
+body {
+  margin: 0;
+  background: #5c94fc;
+  overflow: hidden;
+}
+
+#game {
+  width: 800px;
+  height: 400px;
+  margin: 50px auto;
+  position: relative;
+  border: 3px solid #000;
+  background: #5c94fc;
+}
+
+#player {
+  width: 40px;
+  height: 40px;
+  background: red;
+  position: absolute;
+  bottom: 50px;
+  left: 50px;
+}
+
+.ground {
+  width: 100%;
+  height: 50px;
+  background: brown;
+  position: absolute;
+  bottom: 0;
+}
