@@ -112,11 +112,11 @@ function setRandomStone() {
     }
 
     // collision (based on size)
-    let blockHeight = parseInt(block.style.height);
+ let blockHeight = parseInt(block.style.height);
 
-    if (blockLeft < 80 && blockLeft > 0 && position < (50 + blockHeight - 10)) {
-      gameOver();
-    }
+if (blockLeft < 70 && blockLeft > 0 && position < (50 + blockHeight - 5)) {
+  gameOver();
+}
 
   }, 30);
 });
