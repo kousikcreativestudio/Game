@@ -1,10 +1,10 @@
 window.onload = function () {
 
-  // 🎯 VARIABLES
-  let player = document.getElementById("player");
-  let blocks = document.querySelectorAll(".block");
-  let coinsEl = document.querySelectorAll(".coin");
-  let scoreDisplay = document.getElementById("score");
+  // 🎯 ELEMENTS
+  const player = document.getElementById("player");
+  const blocks = document.querySelectorAll(".block");
+  const coinsEl = document.querySelectorAll(".coin");
+  const scoreDisplay = document.getElementById("score");
 
   let coins = parseInt(localStorage.getItem("coins")) || 0;
   let score = 0;
@@ -15,17 +15,17 @@ window.onload = function () {
   // 🟢 PLAYER PHYSICS
   let position = 50;
   let velocity = 0;
- let gravity = -0.5;
-let jumpPower = 9.5;
+  let gravity = -0.5;
+  let jumpPower = 10;
+  let jumpCount = 0;
 
-function jump() {
-  if (jumpCount >= 2) return;
+  function jump() {
+    if (jumpCount >= 2) return;
+    velocity = jumpPower;
+    jumpCount++;
+  }
 
-  velocity = jumpPower;
-  jumpCount++;
-}
-
-  // 🎯 UPDATE UI
+  // 🎯 SCORE UI
   function updateScore() {
     scoreDisplay.innerText =
       "Score: " + score + " | Coins: " + coins + " | High: " + highScore;
@@ -33,14 +33,13 @@ function jump() {
 
   updateScore();
 
-  // 🟢 GAME LOOP (SMOOTH MOVEMENT)
+  // 🟢 GAME LOOP (PLAYER ONLY)
   function gameLoop() {
     if (!gameRunning) return;
 
     velocity += gravity;
     position += velocity;
 
-    // 🟢 LAND FIX
     if (position <= 50) {
       position = 50;
       velocity = 0;
@@ -54,109 +53,84 @@ function jump() {
 
   gameLoop();
 
-  // 🟢 DOUBLE JUMP
-  function jump() {
-    if (jumpCount >= 2) return;
-
-    velocity = 10;
-    jumpCount++;
-  }
-
   // 🎮 CONTROLS
-  document.addEventListener("keydown", function (e) {
+  document.addEventListener("keydown", e => {
     if (e.code === "Space") jump();
   });
 
   document.addEventListener("touchstart", jump);
 
-  // 🚧 BLOCK MOVEMENT
-blocks.forEach(block => {
+  // 🪨 BLOCK LOGIC (FIXED)
+  blocks.forEach(block => {
 
-  let blockLeft = parseInt(block.style.left) || 800;
-  let passed = false;
+    let blockLeft = 800;
+    let passed = false;
+    let speed = 5;
 
-  let blockSpeed = 4.2; // ✅ ONLY ONE TIME
-
-  // 🪨 RANDOM SIZE (SMALL / MEDIUM / BIG)
-  function setRandomStone() {
-    let type = Math.random();
-
-    if (type < 0.65) {
-      block.style.width = "18px";
-      block.style.height = "18px";
-    } 
-    else if (type < 0.9) {
-      block.style.width = "28px";
-      block.style.height = "28px";
-    } 
-    else {
-      block.style.width = "38px";
-      block.style.height = "38px";
-    }
-  }
-
-  setRandomStone();
-
-  setInterval(() => {
-    if (!gameRunning) return;
-
-    // 🎯 MOVE
-    blockLeft -= blockSpeed;
-
-    // 🔁 RESET
-    if (blockLeft < -60) {
-      blockLeft = 800;
-      passed = false;
-      setRandomStone();
+    function setRandomStone() {
+      let r = Math.random();
+      if (r < 0.6) {
+        block.style.width = "20px";
+        block.style.height = "20px";
+      } else if (r < 0.9) {
+        block.style.width = "30px";
+        block.style.height = "30px";
+      } else {
+        block.style.width = "40px";
+        block.style.height = "40px";
+      }
     }
 
-    block.style.left = blockLeft + "px";
+    setRandomStone();
 
-    // 🧮 SCORE
-    if (!passed && blockLeft < 50) {
-      score++;
-      passed = true;
+    setInterval(() => {
+      if (!gameRunning) return;
 
-      if (score > highScore) {
-        highScore = score;
-        localStorage.setItem("highScore", highScore);
+      blockLeft -= speed;
+
+      if (blockLeft < -60) {
+        blockLeft = 800;
+        passed = false;
+        setRandomStone();
       }
 
-      updateScore();
-    }
+      block.style.left = blockLeft + "px";
 
-// 💥 SAFE COLLISION (NO GAME FREEZE)
+      // 🎯 SCORE
+      if (!passed && blockLeft < 50) {
+        score++;
+        passed = true;
 
-if (!player || !block) return; // 🛑 prevent crash
+        if (score > highScore) {
+          highScore = score;
+          localStorage.setItem("highScore", highScore);
+        }
 
-let playerRect = player.getBoundingClientRect();
-let blockRect = block.getBoundingClientRect();
+        updateScore();
+      }
 
-// hitbox adjust
-let paddingX = 10;
-let paddingY = 10;
+      // 💥 COLLISION (FIXED)
+      let p = player.getBoundingClientRect();
+      let b = block.getBoundingClientRect();
 
-let pLeft = playerRect.left + paddingX;
-let pRight = playerRect.right - paddingX;
-let pTop = playerRect.top + paddingY;
-let pBottom = playerRect.bottom - paddingY;
+      let pad = 8;
 
-if (
-  pRight > blockRect.left &&
-  pLeft < blockRect.right &&
-  pBottom > blockRect.top &&
-  pTop < blockRect.bottom
-) {
-  gameOver();
-}
+      if (
+        p.right - pad > b.left &&
+        p.left + pad < b.right &&
+        p.bottom - pad > b.top
+      ) {
+        gameOver();
+      }
 
-  // 💰 COIN SYSTEM (MOVING + COLLECT)
+    }, 30);
+  });
+
+  // 💰 COINS (FIXED - NO NESTED INTERVAL BUG)
   coinsEl.forEach(coin => {
 
-    let coinLeft = parseInt(coin.style.left) || 900;
-    let coinBottom = Math.floor(Math.random() * 100) + 60;
-
-    coin.style.bottom = coinBottom + "px";
+    let coinLeft = 900;
+    let coinBottom = Math.random() * 120 + 60;
 
     setInterval(() => {
       if (!gameRunning) return;
@@ -165,13 +139,13 @@ if (
 
       if (coinLeft < -20) {
         coinLeft = 900;
-        coinBottom = Math.floor(Math.random() * 120) + 60;
-        coin.style.bottom = coinBottom + "px";
+        coinBottom = Math.random() * 120 + 60;
       }
 
       coin.style.left = coinLeft + "px";
+      coin.style.bottom = coinBottom + "px";
 
-      // 💥 COIN COLLECT
+      // 💰 COLLECT
       if (
         coinLeft < 80 &&
         coinLeft > 20 &&
@@ -181,7 +155,7 @@ if (
         coins++;
         localStorage.setItem("coins", coins);
 
-        coinLeft = -50; // hide coin
+        coinLeft = -50;
         updateScore();
       }
 
@@ -191,9 +165,7 @@ if (
   // ❌ GAME OVER
   function gameOver() {
     gameRunning = false;
-
     alert("💥 Game Over!\nScore: " + score);
-
     location.reload();
   }
 
