@@ -56,8 +56,8 @@ body {
 .coin {
   width: 20px;
   height: 20px;
+  background: gold;
   position: absolute;
-  bottom: 100px;
   border-radius: 50%;
 }
 
