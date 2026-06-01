@@ -1,43 +1,40 @@
 let player = document.getElementById("player");
 
-let position = 50;
+let x = 50;
+let y = 50;
+let velocity = 0;
+let gravity = 1;
 let isJumping = false;
+
+function gameLoop() {
+  velocity -= gravity;
+  y += velocity;
+
+  if (y <= 50) {
+    y = 50;
+    velocity = 0;
+    isJumping = false;
+  }
+
+  player.style.bottom = y + "px";
+  player.style.left = x + "px";
+
+  requestAnimationFrame(gameLoop);
+}
 
 document.addEventListener("keydown", function(e) {
   if (e.code === "Space" && !isJumping) {
-    jump();
+    velocity = 15;
+    isJumping = true;
   }
 
   if (e.code === "ArrowRight") {
-    position += 10;
-    player.style.left = position + "px";
+    x += 10;
   }
 
   if (e.code === "ArrowLeft") {
-    position -= 10;
-    player.style.left = position + "px";
+    x -= 10;
   }
 });
 
-function jump() {
-  isJumping = true;
-  let up = 0;
-
-  let jumpUp = setInterval(() => {
-    if (up >= 100) {
-      clearInterval(jumpUp);
-
-      let fallDown = setInterval(() => {
-        if (up <= 0) {
-          clearInterval(fallDown);
-          isJumping = false;
-        }
-        up -= 5;
-        player.style.bottom = (50 + up) + "px";
-      }, 20);
-
-    }
-    up += 5;
-    player.style.bottom = (50 + up) + "px";
-  }, 20);
-}
+gameLoop();
