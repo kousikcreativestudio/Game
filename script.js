@@ -3,6 +3,7 @@ window.onload = function () {
   // 🎯 VARIABLES
   let player = document.getElementById("player");
   let blocks = document.querySelectorAll(".block");
+  let coinsEl = document.querySelectorAll(".coin");
   let scoreDisplay = document.getElementById("score");
 
   let coins = parseInt(localStorage.getItem("coins")) || 0;
@@ -11,8 +12,10 @@ window.onload = function () {
 
   let gameRunning = true;
 
-  // 🟢 PLAYER SETTINGS
+  // 🟢 PLAYER PHYSICS
   let position = 50;
+  let velocity = 0;
+  let gravity = -0.6;
   let jumpCount = 0;
 
   // 🎯 UPDATE UI
@@ -23,31 +26,33 @@ window.onload = function () {
 
   updateScore();
 
-  // 🟢 JUMP FUNCTION (DOUBLE JUMP)
+  // 🟢 GAME LOOP (SMOOTH MOVEMENT)
+  function gameLoop() {
+    if (!gameRunning) return;
+
+    velocity += gravity;
+    position += velocity;
+
+    // 🟢 LAND FIX
+    if (position <= 50) {
+      position = 50;
+      velocity = 0;
+      jumpCount = 0;
+    }
+
+    player.style.bottom = position + "px";
+
+    requestAnimationFrame(gameLoop);
+  }
+
+  gameLoop();
+
+  // 🟢 DOUBLE JUMP
   function jump() {
     if (jumpCount >= 2) return;
 
+    velocity = 10;
     jumpCount++;
-
-    let up = setInterval(() => {
-      if (position >= 150) {
-        clearInterval(up);
-
-        let down = setInterval(() => {
-          if (position <= 50) {
-            clearInterval(down);
-            jumpCount = 0;
-          } else {
-            position -= 5;
-            player.style.bottom = position + "px";
-          }
-        }, 20);
-
-      } else {
-        position += 5;
-        player.style.bottom = position + "px";
-      }
-    }, 20);
   }
 
   // 🎮 CONTROLS
@@ -55,11 +60,9 @@ window.onload = function () {
     if (e.code === "Space") jump();
   });
 
-  document.addEventListener("touchstart", function () {
-    jump();
-  });
+  document.addEventListener("touchstart", jump);
 
-  // 🚧 BLOCK MOVEMENT + SCORE
+  // 🚧 BLOCK MOVEMENT
   blocks.forEach(block => {
 
     let blockLeft = parseInt(block.style.left) || 800;
@@ -70,19 +73,18 @@ window.onload = function () {
 
       blockLeft -= 5;
 
-      if (blockLeft < -50) {
+      if (blockLeft < -60) {
         blockLeft = 800;
         passed = false;
       }
 
       block.style.left = blockLeft + "px";
 
-      // 🎯 SCORE
+      // 🎯 SCORE WHEN PASSED
       if (!passed && blockLeft < 50) {
         score++;
         passed = true;
 
-        // 🏆 HIGH SCORE
         if (score > highScore) {
           highScore = score;
           localStorage.setItem("highScore", highScore);
@@ -91,25 +93,51 @@ window.onload = function () {
         updateScore();
       }
 
-      // 💥 COLLISION DETECTION
-      let playerBottom = parseInt(player.style.bottom) || 50;
-
-      if (blockLeft < 80 && blockLeft > 0 && playerBottom < 60) {
+      // 💥 COLLISION
+      if (blockLeft < 80 && blockLeft > 0 && position < 60) {
         gameOver();
       }
 
     }, 30);
   });
 
-  // 💰 SIMPLE COIN SYSTEM (AUTO REWARD)
-  setInterval(() => {
-    if (!gameRunning) return;
+  // 💰 COIN SYSTEM (MOVING + COLLECT)
+  coinsEl.forEach(coin => {
 
-    coins += 1;
-    localStorage.setItem("coins", coins);
-    updateScore();
+    let coinLeft = parseInt(coin.style.left) || 900;
+    let coinBottom = Math.floor(Math.random() * 100) + 60;
 
-  }, 3000); // every 3 sec
+    coin.style.bottom = coinBottom + "px";
+
+    setInterval(() => {
+      if (!gameRunning) return;
+
+      coinLeft -= 5;
+
+      if (coinLeft < -20) {
+        coinLeft = 900;
+        coinBottom = Math.floor(Math.random() * 120) + 60;
+        coin.style.bottom = coinBottom + "px";
+      }
+
+      coin.style.left = coinLeft + "px";
+
+      // 💥 COIN COLLECT
+      if (
+        coinLeft < 80 &&
+        coinLeft > 20 &&
+        position > coinBottom - 30 &&
+        position < coinBottom + 30
+      ) {
+        coins++;
+        localStorage.setItem("coins", coins);
+
+        coinLeft = -50; // hide coin
+        updateScore();
+      }
+
+    }, 30);
+  });
 
   // ❌ GAME OVER
   function gameOver() {
@@ -117,7 +145,6 @@ window.onload = function () {
 
     alert("💥 Game Over!\nScore: " + score);
 
-    // restart
     location.reload();
   }
 
