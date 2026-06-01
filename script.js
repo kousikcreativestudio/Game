@@ -63,43 +63,63 @@ window.onload = function () {
   document.addEventListener("touchstart", jump);
 
   // 🚧 BLOCK MOVEMENT
-  blocks.forEach(block => {
+ blocks.forEach(block => {
 
-    let blockLeft = parseInt(block.style.left) || 800;
-    let passed = false;
+  let blockLeft = parseInt(block.style.left) || 800;
+  let passed = false;
 
-    setInterval(() => {
-      if (!gameRunning) return;
+  // 🪨 RANDOM SIZE (SMALL / MEDIUM)
+  function setRandomStone() {
+    let type = Math.random();
 
-      blockLeft -= 5;
+    if (type < 0.5) {
+      // small stone
+      block.style.width = "30px";
+      block.style.height = "30px";
+    } else {
+      // medium stone
+      block.style.width = "50px";
+      block.style.height = "50px";
+    }
+  }
 
-      if (blockLeft < -60) {
-        blockLeft = 800;
-        passed = false;
+  setRandomStone();
+
+  setInterval(() => {
+    if (!gameRunning) return;
+
+    blockLeft -= 5;
+
+    if (blockLeft < -60) {
+      blockLeft = 800;
+      passed = false;
+      setRandomStone(); // 🪨 new random size
+    }
+
+    block.style.left = blockLeft + "px";
+
+    // score
+    if (!passed && blockLeft < 50) {
+      score++;
+      passed = true;
+
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem("highScore", highScore);
       }
 
-      block.style.left = blockLeft + "px";
+      updateScore();
+    }
 
-      // 🎯 SCORE WHEN PASSED
-      if (!passed && blockLeft < 50) {
-        score++;
-        passed = true;
+    // collision (based on size)
+    let blockHeight = parseInt(block.style.height);
 
-        if (score > highScore) {
-          highScore = score;
-          localStorage.setItem("highScore", highScore);
-        }
+    if (blockLeft < 80 && blockLeft > 0 && position < (50 + blockHeight - 10)) {
+      gameOver();
+    }
 
-        updateScore();
-      }
-
-      // 💥 COLLISION
-      if (blockLeft < 80 && blockLeft > 0 && position < 60) {
-        gameOver();
-      }
-
-    }, 30);
-  });
+  }, 30);
+});
 
   // 💰 COIN SYSTEM (MOVING + COLLECT)
   coinsEl.forEach(coin => {
