@@ -33,11 +33,12 @@ body {
 }
 
 .block {
-  width: 30px;   /* smaller */
-  height: 30px;  /* smaller */
-  background: green; /* changed color */
   position: absolute;
-  border: 2px solid black;
+  bottom: 50px;
+  background: linear-gradient(145deg, #6b6b6b, #3d3d3d);
+  border-radius: 30% 40% 35% 45%;
+  box-shadow: inset -4px -4px 8px rgba(0,0,0,0.4),
+              inset 4px 4px 8px rgba(255,255,255,0.2);
 }
 
 #score {
