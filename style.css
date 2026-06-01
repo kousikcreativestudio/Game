@@ -52,3 +52,19 @@ body {
   padding: 5px 15px;
   border-radius: 10px;
 }
+
+.coin {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  bottom: 100px;
+  border-radius: 50%;
+}
+
+.gold {
+  background: gold;
+}
+
+.silver {
+  background: silver;
+}
