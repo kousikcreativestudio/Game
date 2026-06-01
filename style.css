@@ -22,7 +22,6 @@ body {
   position: absolute;
   bottom: 50px;
   left: 50px; /* ✅ fixed */
-  image-rendering: pixelated;
 }
 
 .ground {
