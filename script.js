@@ -69,19 +69,19 @@ window.onload = function () {
   let passed = false;
 
   // 🪨 RANDOM SIZE (SMALL / MEDIUM)
-  function setRandomStone() {
-    let type = Math.random();
+function setRandomStone() {
+  let type = Math.random();
 
-    if (type < 0.5) {
-      // small stone
-      block.style.width = "30px";
-      block.style.height = "30px";
-    } else {
-      // medium stone
-      block.style.width = "50px";
-      block.style.height = "50px";
-    }
+  if (type < 0.6) {
+    // 🪨 SMALL (easy jump)
+    block.style.width = "20px";
+    block.style.height = "20px";
+  } else {
+    // 🪨 MEDIUM (little challenge)
+    block.style.width = "35px";
+    block.style.height = "35px";
   }
+}
 
   setRandomStone();
 
