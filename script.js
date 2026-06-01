@@ -1,28 +1,27 @@
-window.onload = function() {
+window.onload = function () {
 
-let coins = localStorage.getItem("coins") || 0;
-let player = document.getElementById("player");
-let blocks = document.querySelectorAll(".block");
-let scoreDisplay = document.getElementById("score");
+  let coins = parseInt(localStorage.getItem("coins")) || 0;
 
-let score = 0;
-let highScore = localStorage.getItem("highScore") || 0;
-let gameRunning = true;
+  let player = document.getElementById("player");
+  let blocks = document.querySelectorAll(".block");
+  let scoreDisplay = document.getElementById("score");
 
-// 🎯 Score
-function updateScore() {
-  if (!gameRunning) return;
+  let score = 0;
+  let highScore = parseInt(localStorage.getItem("highScore")) || 0;
+  let gameRunning = true;
 
-  score++;
-  scoreDisplay.innerText = "Score: " + score + " | Coins: " + coins;
-
-  if (score > highScore) {
-    highScore = score;
-    localStorage.setItem("highScore", highScore);
+  // 🎯 Update UI
+  function updateScore() {
+    scoreDisplay.innerText =
+      "Score: " + score + " | Coins: " + coins + " | High: " + highScore;
   }
-}
 
-setInterval(updateScore, 100);
+  updateScore();
+
+  // ✅ FIXED POSITION
+  setInterval(updateScore, 100);
+
+}
 
 
 // 🟢 Jump
@@ -86,46 +85,35 @@ blocks.forEach(block => {
   }, 30);
 });
 
-let coinElements = document.querySelectorAll(".coin");
+let coins = parseInt(localStorage.getItem("coins")) || 0;
 
-coinElements.forEach(coin => {
-  let coinLeft = parseInt(coin.style.left);
+blocks.forEach(block => {
+  let blockLeft = parseInt(block.style.left);
+  let passed = false; // ✅ correct
 
   setInterval(() => {
     if (!gameRunning) return;
 
-    coinLeft -= 5;
+    blockLeft -= 5;
 
-    if (coinLeft < -20) {
-      coinLeft = 800;
+    if (blockLeft < -50) {
+      blockLeft = 800;
+      passed = false;
     }
 
-    coin.style.left = coinLeft + "px";
+    block.style.left = blockLeft + "px";
 
-    let playerRect = player.getBoundingClientRect();
-    let coinRect = coin.getBoundingClientRect();
-
-    if (
-      playerRect.right > coinRect.left &&
-      playerRect.left < coinRect.right &&
-      playerRect.bottom > coinRect.top &&
-      playerRect.top < coinRect.bottom
-    ) {
-      // 💰 Collect coin
-      if (coin.classList.contains("gold")) {
-        coins = parseInt(coins) + 5;
-      } else {
-        coins = parseInt(coins) + 2;
-      }
-
-      localStorage.setItem("coins", coins);
-
-      coinLeft = 800; // reset coin
+    // 🎯 score when passing
+    if (!passed && blockLeft < 50) {
+      score++;
+      passed = true;
     }
+
+    scoreDisplay.innerText =
+      "Score: " + score + " | Coins: " + coins;
 
   }, 30);
 });
-
 
 // ❌ Game Over
 function gameOver() {
