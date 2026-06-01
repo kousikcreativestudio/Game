@@ -15,8 +15,15 @@ window.onload = function () {
   // 🟢 PLAYER PHYSICS
   let position = 50;
   let velocity = 0;
-  let gravity = -0.6;
-  let jumpCount = 0;
+ let gravity = -0.5;
+let jumpPower = 9.5;
+
+function jump() {
+  if (jumpCount >= 2) return;
+
+  velocity = jumpPower;
+  jumpCount++;
+}
 
   // 🎯 UPDATE UI
   function updateScore() {
@@ -72,23 +79,31 @@ window.onload = function () {
 function setRandomStone() {
   let type = Math.random();
 
-  if (type < 0.6) {
-    // 🪨 SMALL (easy jump)
-    block.style.width = "20px";
-    block.style.height = "20px";
-  } else {
-    // 🪨 MEDIUM (little challenge)
-    block.style.width = "35px";
-    block.style.height = "35px";
+  if (type < 0.65) {
+    // 🪨 SMALL (most common → easy)
+    block.style.width = "18px";
+    block.style.height = "18px";
+  } 
+  else if (type < 0.9) {
+    // 🪨 MEDIUM (challenge)
+    block.style.width = "28px";
+    block.style.height = "28px";
+  } 
+  else {
+    // 🪨 BIG (rare → exciting)
+    block.style.width = "38px";
+    block.style.height = "38px";
   }
 }
 
   setRandomStone();
 
-  setInterval(() => {
-    if (!gameRunning) return;
+let blockSpeed = 4.2; // 
 
-    blockLeft -= 5;
+setInterval(() => {
+  if (!gameRunning) return;
+
+  blockLeft -= blockSpeed; // 
 
     if (blockLeft < -60) {
       blockLeft = 800;
