@@ -125,19 +125,17 @@ blocks.forEach(block => {
       updateScore();
     }
 
-// 💥 PERFECT COLLISION (NO FAKE HITS)
+// 💥 ACCURATE COLLISION (REAL HITBOX)
 
-let playerBottom = position;
-let playerTop = position + 40; // adjust if player size changes
+let playerRect = player.getBoundingClientRect();
+let blockRect = block.getBoundingClientRect();
 
-let blockHeight = parseInt(block.style.height);
-
-// check real overlap
+// check overlap
 if (
-  blockLeft < 60 &&     // horizontal range (front)
-  blockLeft > 10 &&     // horizontal range (back)
-  playerBottom < (50 + blockHeight - 5) && // feet touch stone
-  playerTop > 50        // player body above ground
+  playerRect.right > blockRect.left + 5 &&
+  playerRect.left < blockRect.right - 5 &&
+  playerRect.bottom > blockRect.top + 5 &&
+  playerRect.top < blockRect.bottom - 5
 ) {
   gameOver();
 }
