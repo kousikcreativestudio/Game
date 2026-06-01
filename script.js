@@ -25,26 +25,26 @@ setInterval(updateScore, 100);
 
 
 // 🟢 Jump
-let isJumping = false;
+let jumpCount = 0;
 
 document.addEventListener("keydown", function(e) {
-  if (e.code === "Space" && !isJumping) {
+  if (e.code === "Space" && jumpCount < 2) {
     jump();
+    jumpCount++;
   }
 });
 
 function jump() {
-  isJumping = true;
-  let position = 50;
+  let position = parseInt(player.style.bottom) || 50;
 
   let up = setInterval(() => {
-    if (position >= 150) {
+    if (position >= 200) { // higher jump
       clearInterval(up);
 
       let down = setInterval(() => {
         if (position <= 50) {
           clearInterval(down);
-          isJumping = false;
+          jumpCount = 0; // reset jump
         }
         position -= 5;
         player.style.bottom = position + "px";
@@ -57,6 +57,8 @@ function jump() {
 
 
 // 🚧 Blocks
+let passed = false;
+
 blocks.forEach(block => {
   let blockLeft = parseInt(block.style.left);
 
@@ -64,24 +66,21 @@ blocks.forEach(block => {
     if (!gameRunning) return;
 
     blockLeft -= 5;
+
     if (blockLeft < -50) {
       blockLeft = 800;
+      passed = false;
     }
 
     block.style.left = blockLeft + "px";
 
-    let playerRect = player.getBoundingClientRect();
-    let blockRect = block.getBoundingClientRect();
-
-    if (
-      playerRect.right > blockRect.left &&
-      playerRect.left < blockRect.right &&
-      playerRect.bottom > blockRect.top &&
-      playerRect.top < blockRect.bottom
-    ) {
-      gameOver();
+    // 🎯 Score when player passes block
+    if (!passed && blockLeft < 50) {
+      score++;
+      passed = true;
     }
 
+    scoreDisplay.innerText = "Score: " + score + " | Coins: " + coins;
   }, 30);
 });
 
