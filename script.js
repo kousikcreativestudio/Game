@@ -1,5 +1,6 @@
 window.onload = function() {
 
+let coins = localStorage.getItem("coins") || 0;
 let player = document.getElementById("player");
 let blocks = document.querySelectorAll(".block");
 let scoreDisplay = document.getElementById("score");
@@ -84,8 +85,6 @@ blocks.forEach(block => {
     scoreDisplay.innerText = "Score: " + score + " | Coins: " + coins;
   }, 30);
 });
-
-  let coins = localStorage.getItem("coins") || 0;
 
 let coinElements = document.querySelectorAll(".coin");
 
