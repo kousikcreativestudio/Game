@@ -130,12 +130,21 @@ blocks.forEach(block => {
 let playerRect = player.getBoundingClientRect();
 let blockRect = block.getBoundingClientRect();
 
-// check overlap
+// 🔧 shrink player hitbox (IMPORTANT)
+let paddingX = 10;  // left-right cut
+let paddingY = 10;  // top-bottom cut
+
+let pLeft = playerRect.left + paddingX;
+let pRight = playerRect.right - paddingX;
+let pTop = playerRect.top + paddingY;
+let pBottom = playerRect.bottom - paddingY;
+
+// collision check
 if (
-  playerRect.right > blockRect.left + 5 &&
-  playerRect.left < blockRect.right - 5 &&
-  playerRect.bottom > blockRect.top + 5 &&
-  playerRect.top < blockRect.bottom - 5
+  pRight > blockRect.left &&
+  pLeft < blockRect.right &&
+  pBottom > blockRect.top &&
+  pTop < blockRect.bottom
 ) {
   gameOver();
 }
