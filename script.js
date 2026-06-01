@@ -1,3 +1,4 @@
+window.onload = function() {
 let player = document.getElementById("player");
 let blocks = document.querySelectorAll(".block");
 let scoreDisplay = document.getElementById("score");
