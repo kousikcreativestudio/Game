@@ -13,7 +13,7 @@ function updateScore() {
   if (!gameRunning) return;
 
   score++;
-  scoreDisplay.innerText = "Score: " + score + " | High: " + highScore;
+  scoreDisplay.innerText = "Score: " + score + " | Coins: " + coins;
 
   if (score > highScore) {
     highScore = score;
@@ -61,6 +61,7 @@ let passed = false;
 
 blocks.forEach(block => {
   let blockLeft = parseInt(block.style.left);
+  let passed = false;
 
   setInterval(() => {
     if (!gameRunning) return;
@@ -81,6 +82,48 @@ blocks.forEach(block => {
     }
 
     scoreDisplay.innerText = "Score: " + score + " | Coins: " + coins;
+  }, 30);
+});
+
+  let coins = localStorage.getItem("coins") || 0;
+
+let coinElements = document.querySelectorAll(".coin");
+
+coinElements.forEach(coin => {
+  let coinLeft = parseInt(coin.style.left);
+
+  setInterval(() => {
+    if (!gameRunning) return;
+
+    coinLeft -= 5;
+
+    if (coinLeft < -20) {
+      coinLeft = 800;
+    }
+
+    coin.style.left = coinLeft + "px";
+
+    let playerRect = player.getBoundingClientRect();
+    let coinRect = coin.getBoundingClientRect();
+
+    if (
+      playerRect.right > coinRect.left &&
+      playerRect.left < coinRect.right &&
+      playerRect.bottom > coinRect.top &&
+      playerRect.top < coinRect.bottom
+    ) {
+      // 💰 Collect coin
+      if (coin.classList.contains("gold")) {
+        coins = parseInt(coins) + 5;
+      } else {
+        coins = parseInt(coins) + 2;
+      }
+
+      localStorage.setItem("coins", coins);
+
+      coinLeft = 800; // reset coin
+    }
+
   }, 30);
 });
 
